@@ -1,9 +1,10 @@
-package com.zavier;
+package com.zavier.server;
 
 import com.zavier.server.Server;
 import com.zavier.server.ServerFactory;
 import com.zavier.server.ServerStatus;
 import com.zavier.server.config.ServerConfig;
+import java.io.IOException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -18,7 +19,7 @@ public class TestServer {
     }
 
     @Test
-    public void testServerStart() {
+    public void testServerStart() throws IOException {
         server.start();
         assertTrue("服务器启动后，状态是STARTED", server.getStatus().equals(ServerStatus.STARTED));
     }

@@ -1,7 +1,9 @@
 package com.zavier.server;
 
+import java.io.IOException;
+
 public interface Server {
-    void start();
+    void start() throws IOException;
 
     void stop();
 
