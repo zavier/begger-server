@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.*;
 
-public class TestServerAcceptRequest {
+public class TestServerAcceptRequest extends TestServerBase{
     private static final Logger logger = LoggerFactory.getLogger(TestServerAcceptRequest.class);
 
     private static Server server;
@@ -29,34 +29,21 @@ public class TestServerAcceptRequest {
 
     @Test
     public void testServerAcceptRequest() {
+        // 如果server未启动，则启动
         if (server.getStatus().equals(ServerStatus.STOPED)) {
-            // 在另一个线程启动Server
-            new Thread(() -> {
-                try {
-                    server.start();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }).start();
-            // 如果Server未启动，sleep
-            while (server.getStatus().equals(ServerStatus.STOPED)) {
-                logger.info("等待Server启动");
-                try {
-                    TimeUnit.MILLISECONDS.sleep(500);
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
-                }
-                Socket socket = new Socket();
-                InetSocketAddress endpoint = new InetSocketAddress("localhost",
-                    ServerConfig.DEFAULT_PORT);
-                try {
-                    socket.connect(endpoint, TIMEOUT);
-                    assertTrue("服务器启动后，能接受请求", socket.isConnected());
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                } finally {
-                    IoUtil.closeQuietly(socket);
-                }
+            startServer(server);
+            waitServerStart(server);
+
+            Socket socket = new Socket();
+            InetSocketAddress endpoint = new InetSocketAddress("localhost",
+                ServerConfig.DEFAULT_PORT);
+            try {
+                socket.connect(endpoint, TIMEOUT);
+                assertTrue("服务器启动后，能接受请求", socket.isConnected());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            } finally {
+                IoUtil.closeQuietly(socket);
             }
         }
     }

@@ -2,11 +2,11 @@ package com.zavier.server.impl;
 
 import com.zavier.server.Server;
 import com.zavier.server.ServerStatus;
+import com.zavier.server.connector.Connector;
+import com.zavier.server.connector.impl.SocketConnector;
 import com.zavier.server.config.ServerConfig;
-import com.zavier.server.io.IoUtil;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,38 +14,23 @@ public class SimpleServer implements Server {
     private static final Logger logger = LoggerFactory.getLogger(SimpleServer.class);
 
     private volatile ServerStatus serverStatus = ServerStatus.STOPED;
-    private ServerSocket serverSocket;
-    private final int PORT;
+    private int port;
+    private List<Connector> connectorList;
 
-    public SimpleServer(ServerConfig serverConfig) {
-        PORT = serverConfig.getPort();
+    public SimpleServer(ServerConfig serverConfig, List<Connector> connectorList) {
+        this.port = serverConfig.getPort();
+        this.connectorList = connectorList;
     }
 
     @Override
-    public void start() throws IOException {
-        // 监听本地端口，不成功则抛出异常
-        this.serverSocket = new ServerSocket(this.PORT);
+    public void start() {
+        connectorList.stream().forEach(connector -> connector.start());
         this.serverStatus = ServerStatus.STARTED;
-        while (true) {
-            Socket socket = null;
-            try {
-                socket = serverSocket.accept();
-                logger.info("新增连接：" + socket.getInetAddress() + ":" + socket.getPort());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            } finally {
-                IoUtil.closeQuietly(socket);
-            }
-        }
     }
 
     @Override
     public void stop() {
-        if (this.serverStatus.equals(ServerStatus.STOPED)) {
-            System.out.println("Sorry! Server has stoped!");
-            return;
-        }
-        IoUtil.closeQuietly(this.serverSocket);
+        connectorList.stream().forEach(connector -> connector.stop());
         this.serverStatus = ServerStatus.STOPED;
         logger.info("Server stop");
     }
@@ -57,6 +42,6 @@ public class SimpleServer implements Server {
 
     @Override
     public int getPort() {
-        return PORT;
+        return port;
     }
 }
