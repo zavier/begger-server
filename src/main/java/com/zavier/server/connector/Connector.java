@@ -1,7 +1,7 @@
 package com.zavier.server.connector;
 
 
-public abstract class Connector implements LifeCycle {
+public abstract class Connector<T> implements LifeCycle {
 
     @Override
     public void start() {
@@ -12,4 +12,6 @@ public abstract class Connector implements LifeCycle {
     protected abstract void init() throws ConnectorException;
 
     protected abstract void acceptConnect() throws ConnectorException;
+
+    protected abstract void whenAccept(T connect) throws ConnectorException;
 }

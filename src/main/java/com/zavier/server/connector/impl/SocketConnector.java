@@ -2,6 +2,7 @@ package com.zavier.server.connector.impl;
 
 import com.zavier.server.connector.Connector;
 import com.zavier.server.connector.ConnectorException;
+import com.zavier.server.event.EventListener;
 import com.zavier.server.io.IoUtil;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,15 +10,17 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SocketConnector extends Connector {
+public class SocketConnector extends Connector<Socket> {
     private static final Logger logger = LoggerFactory.getLogger(SocketConnector.class);
 
     private ServerSocket serverSocket;
     private int port;
     private boolean started;
+    private EventListener<Socket> eventListener;
 
-    public SocketConnector(int port) {
+    public SocketConnector(int port, EventListener<Socket> eventListener) {
         this.port = port;
+        this.eventListener = eventListener;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class SocketConnector extends Connector {
                 Socket socket = null;
                 try {
                     socket = serverSocket.accept();
-                    logger.info("新增连接：" + socket.getInetAddress() + ":" + socket.getPort());
+                    whenAccept(socket);
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 } finally {
@@ -46,6 +49,11 @@ public class SocketConnector extends Connector {
                 }
             }
         }).start();
+    }
+
+    @Override
+    protected void whenAccept(Socket socketConnect) throws ConnectorException {
+        eventListener.onEvent(socketConnect);
     }
 
     @Override
