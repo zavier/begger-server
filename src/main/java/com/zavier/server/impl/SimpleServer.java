@@ -2,10 +2,7 @@ package com.zavier.server.impl;
 
 import com.zavier.server.Server;
 import com.zavier.server.ServerStatus;
-import com.zavier.server.connector.Connector;
-import com.zavier.server.connector.impl.SocketConnector;
-import com.zavier.server.config.ServerConfig;
-import java.io.IOException;
+import com.zavier.server.connector.AbstractConnector;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +11,9 @@ public class SimpleServer implements Server {
     private static final Logger logger = LoggerFactory.getLogger(SimpleServer.class);
 
     private volatile ServerStatus serverStatus = ServerStatus.STOPED;
-    private int port;
-    private List<Connector> connectorList;
+    private List<AbstractConnector> connectorList;
 
-    public SimpleServer(ServerConfig serverConfig, List<Connector> connectorList) {
-        this.port = serverConfig.getPort();
+    public SimpleServer(List<AbstractConnector> connectorList) {
         this.connectorList = connectorList;
     }
 
@@ -41,7 +36,7 @@ public class SimpleServer implements Server {
     }
 
     @Override
-    public int getPort() {
-        return port;
+    public List<AbstractConnector> getConnectorList() {
+        return connectorList;
     }
 }

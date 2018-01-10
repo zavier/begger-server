@@ -1,4 +1,4 @@
-package com.zavier.server.event.impl;
+package com.zavier.server.event;
 
 import com.zavier.server.event.EventException;
 import com.zavier.server.handler.EventHandler;

@@ -1,6 +1,6 @@
 package com.zavier.server.connector.impl;
 
-import com.zavier.server.connector.Connector;
+import com.zavier.server.connector.AbstractConnector;
 import com.zavier.server.connector.ConnectorFactory;
 import com.zavier.server.event.impl.SocketEventListener;
 
@@ -16,7 +16,7 @@ public class SocketConnectorFactory implements ConnectorFactory {
     }
 
     @Override
-    public Connector getConnector() {
+    public AbstractConnector getConnector() {
         return new SocketConnector(this.socketConnectorConfig.getPort(), socketEventListener);
     }
 }
