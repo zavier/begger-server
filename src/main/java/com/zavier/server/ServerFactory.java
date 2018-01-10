@@ -7,6 +7,7 @@ import com.zavier.server.connector.impl.SocketConnectorConfig;
 import com.zavier.server.connector.impl.SocketConnectorFactory;
 import com.zavier.server.event.impl.SocketEventListener;
 import com.zavier.server.handler.impl.EchoEventHandler;
+import com.zavier.server.handler.impl.FileEventHandler;
 import com.zavier.server.impl.SimpleServer;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 public class ServerFactory {
     public static Server getServer(ServerConfig serverConfig) {
         List<Connector> connectorList = new ArrayList<>();
-        SocketEventListener socketEventListener = new SocketEventListener(new EchoEventHandler());
+        SocketEventListener socketEventListener = new SocketEventListener(new FileEventHandler(System.getProperty("user.dir")));
         ConnectorFactory connectorFactory = new SocketConnectorFactory(new SocketConnectorConfig(serverConfig.getPort()), socketEventListener);
         connectorList.add(connectorFactory.getConnector());
         return new SimpleServer(serverConfig, connectorList);
